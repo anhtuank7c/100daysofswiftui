@@ -51,6 +51,9 @@ print(luckyCharacters)
 var aSetOfDictionary = Set<[String: String]>(arrayLiteral: ["name": "Tuan"], ["name": "Phuong"], ["name": "Elin"])
 print(aSetOfDictionary)
 
+var counts = Set(0 ..< 10) // initialize a set with value from 0 to 9
+print(counts)
+
 var mustVisitPlaces: [String: String] = [String: String]()
 mustVisitPlaces["Top_1"] = "HaLong Bay"
 mustVisitPlaces["Top_2"] = "Da Lat"
