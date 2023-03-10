@@ -29,6 +29,12 @@ ages.append(2)
 ages.append(34)
 ages.append(59)
 
+let games = [String](repeating: "A", count: 10) // initialize an array with 10 items A
+print(games)
+
+let nums = Array(0...100) // initialize an array with items from 0 to 100
+print(nums)
+
 var seagames: Set<String> = Set<String>()
 seagames.insert("2000")
 seagames.insert("2004")
@@ -37,6 +43,13 @@ seagames.insert("2012")
 seagames.insert("2016")
 seagames.insert("2020")
 seagames.insert("2024")
+
+var luckyNumbers = Set<Int>(arrayLiteral: 1, 2, 2, 3, 3, 4, 4)
+print(luckyNumbers)
+var luckyCharacters = Set<String>(arrayLiteral: "A", "B", "C", "C")
+print(luckyCharacters)
+var aSetOfDictionary = Set<[String: String]>(arrayLiteral: ["name": "Tuan"], ["name": "Phuong"], ["name": "Elin"])
+print(aSetOfDictionary)
 
 var mustVisitPlaces: [String: String] = [String: String]()
 mustVisitPlaces["Top_1"] = "HaLong Bay"
