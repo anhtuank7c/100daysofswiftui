@@ -7,103 +7,148 @@
 
 import Cocoa
 
-// check condition is true or false
-var score = 10
-if score >= 80 {
-    print("Very good")
-} else if score >= 60 {
-    print("Normal")
-} else {
-    print("Bad")
+// combine more compare condition to if-else
+let grantedPermission = true
+let authorized = true
+if grantedPermission, authorized {
+    print("You have authorized and have the right permission_1")
+}
+if grantedPermission && authorized {
+    print("You have authorized and have the right permission_2")
 }
 
-let name1 = "A"
-let name2 = "B"
-if name1 > name2 {
-    print("A > B")
-}
-if name1 < name2 {
-    print("A < B")
+// for loop
+let platforms = ["iOS", "macOS", "tvOS", "ipadOS", "watchOS"]
+for os in platforms {
+    print("Swift work great on \(os)")
 }
 
-let years = [2012, 2015, 2017, 2023]
-if years.isEmpty {
-    print("There are no years in the list")
-} else {
-    print("There are \(years.count) years in the list")
-    if years.contains(2023) {
-        print("2023 is in the list")
-    }
-    if years.contains(2012) || years.contains(2015) {
-        print("2012 and 2015 also in the list")
+let developerEquipments = Set<String>(["phone", "computer", "smart watch", "camera"])
+for equipment in developerEquipments {
+    print(equipment.uppercased())
+}
+
+let persons: [[String: String]] = [["name": "Tuan"], ["name": "Nhi"], ["name": "Nhien"], ["name": "Phuong"]]
+for person in persons {
+    for key in person.keys {
+        print("\(key): \(person[key])")
     }
 }
 
-enum Level {
-    case Amateur, Immediate, Advanced
+// x ... y means an integer range
+for i in 1 ... 10 {
+    print(i)
 }
 
-let myLevel: Level = .Amateur
-if myLevel == .Amateur {
-    print("I am an amateur")
-} else if myLevel == .Advanced {
-    print("I am an advanced")
-} else {
-    print("I am an immediate")
+// x ..< y means an integer range start at x and less than y
+for i in 1 ..< 10 {
+    print(i)
 }
 
-// Switch
-switch myLevel {
-case .Advanced:
-    print("Advanced")
-case .Amateur:
-    print("Amateur")
-default:
-    print("Immediate")
+for _ in 1 ... 3 {
+    print("Hello world. I don't care about loop variable so I used _ to ignore it")
 }
 
-let day: Int = 5
-print("My true love gave to me…")
-switch day {
-case 5:
-    print("5 golden rings")
-    fallthrough // means will also execute the next case
-case 10:
-    print("10 golden rings")
-    fallthrough
-default:
-    print("A partridge in a pear tree")
+enum Role {
+    case Guess, Authenticated, Moderator, Administrator
 }
 
-let examResult = 6
-switch examResult {
-case 0:
-    print("Super low")
-case 1, 2, 3, 4, 5: // group multiple cases at once
-    print("Low level")
-case 6, 7, 8:
-    print("Immediate")
-default:
-    print("Professional")
+// while loop
+var countdown = 10
+while countdown > 0 {
+    print(countdown)
+    countdown -= 1
 }
 
-let isWeatherGood: Bool = true
-let isChallengeOpen: Bool = false
-switch (isWeatherGood, isChallengeOpen) { // multiple inputs
-case (true, false):
-    print("Weather is good but no challenge available")
-case (false, true):
-    print("Challenge available but weather doesn't seem to support us")
-case (true, true):
-    print("Well, lets do it")
-default:
-    print("Weather is not good and no challenge available")
+let id = Int.random(in: 1...100)
+let amount = Double.random(in: 1...100)
+
+var roll = 0
+while roll != 20 {
+    roll = Int.random(in: 1...100)
+    print("I rolled a \(roll)")
 }
 
-// Ternary condition
-let age: Int = 16
-let isTeenager = age >= 13 && age <= 19
-let isAdult = age > 19
-let isChild = age < 13
-print(isAdult ? "Adult" : "Not adult")
-print(isAdult ? "Adult" : (isTeenager ? "Teenager" : "Child"))
+// repeat-while loop
+var roll2 = 0
+repeat {
+    roll2 = Int.random(in: 0...10)
+    print("I rolled2 a \(roll2)")
+} while roll2 != 5
+
+// Array, Set built-in forEach loop
+let languages = ["English", "Vietnamese", "Swedish", "French"]
+languages.forEach { language in
+    print(language)
+}
+
+let setLanguages = Set(languages)
+setLanguages.forEach { language in
+    print(language)
+}
+
+// break loop
+for i in 1...10_000_000 {
+    print("Loop \(i)")
+    if (i > 5) {
+        print("Break it now")
+        break // break the loop
+    }
+}
+
+let files = ["image.jpg", "image.jpeg", "image.png", "image.webp", "image.gift", "image.bmp"]
+for file in files {
+    if (file.hasSuffix("webp") == false) {
+        print("\(file) does not match")
+        continue
+    }
+    print("Found \(file) but the loop doesn't stop yet")
+}
+
+var counter = 0
+while true {
+    counter += 1
+    print("Counter \(counter)")
+    if (counter == 3) {
+        print("Break while")
+        break
+    }
+}
+
+repeat {
+    counter += 1
+    print("Repeat counter \(counter)")
+    if (counter == 5) {
+        print("Break repeat-while at \(counter)")
+        break
+    }
+} while true
+
+// CHECKPOINT 3
+
+/**
+ Loop 1 to 100 and for each number:
+ - If it’s a multiple of 3, print “Fizz”
+ - If it’s a multiple of 5, print “Buzz”
+ - If it’s a multiple of 3 and 5, print “FizzBuzz”
+ - Otherwise, just print the number
+ */
+
+print("CHECKPOINT 3")
+
+for i in 1...100 {
+    if i.isMultiple(of: 3) || i.isMultiple(of: 5) {
+        if i.isMultiple(of: 3) {
+            print("Fizz")
+        }
+        if i.isMultiple(of: 5) {
+            print("Buzz")
+        }
+        if i.isMultiple(of: 3), i.isMultiple(of: 5) {
+            print("FizzBuzz")
+        }
+    } else {
+        print(i)
+    }
+
+}
