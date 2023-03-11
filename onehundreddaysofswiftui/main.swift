@@ -7,76 +7,103 @@
 
 import Cocoa
 
-// Type annotation
-
-let name: String = "Tuan"
-let age: Int = 34
-let secureTextEntry: Bool = true
-let temperature: Double = 26.8
-let salary: Float = 0.1231231
-
-var names: [String] = [String]()
-names.append("Tuan")
-names.append("Simon")
-names.append("Adam")
-names.append("Elin")
-
-var ages = [Int]()
-ages.append(20)
-ages.append(22)
-ages.append(7)
-ages.append(2)
-ages.append(34)
-ages.append(59)
-
-let games = [String](repeating: "A", count: 10) // initialize an array with 10 items A
-print(games)
-
-let nums = Array(0...100) // initialize an array with items from 0 to 100
-print(nums)
-
-var seagames: Set<String> = Set<String>()
-seagames.insert("2000")
-seagames.insert("2004")
-seagames.insert("2008")
-seagames.insert("2012")
-seagames.insert("2016")
-seagames.insert("2020")
-seagames.insert("2024")
-
-var luckyNumbers = Set<Int>(arrayLiteral: 1, 2, 2, 3, 3, 4, 4)
-print(luckyNumbers)
-var luckyCharacters = Set<String>(arrayLiteral: "A", "B", "C", "C")
-print(luckyCharacters)
-var aSetOfDictionary = Set<[String: String]>(arrayLiteral: ["name": "Tuan"], ["name": "Phuong"], ["name": "Elin"])
-print(aSetOfDictionary)
-
-var counts = Set(0 ..< 10) // initialize a set with value from 0 to 9
-print(counts)
-
-var mustVisitPlaces: [String: String] = [String: String]()
-mustVisitPlaces["Top_1"] = "HaLong Bay"
-mustVisitPlaces["Top_2"] = "Da Lat"
-mustVisitPlaces["Top_3"] = "Nha Trang"
-mustVisitPlaces["Top_4"] = "Quy Nhon"
-mustVisitPlaces["Top_5"] = "Sapa"
-
-enum PRNDS {
-    case P, R, N, D, S
+// check condition is true or false
+var score = 10
+if score >= 80 {
+    print("Very good")
+} else if score >= 60 {
+    print("Normal")
+} else {
+    print("Bad")
 }
 
-var gearStickPosition: PRNDS = PRNDS.P
-gearStickPosition = .D
+let name1 = "A"
+let name2 = "B"
+if name1 > name2 {
+    print("A > B")
+}
+if name1 < name2 {
+    print("A < B")
+}
 
+let years = [2012, 2015, 2017, 2023]
+if years.isEmpty {
+    print("There are no years in the list")
+} else {
+    print("There are \(years.count) years in the list")
+    if years.contains(2023) {
+        print("2023 is in the list")
+    }
+    if years.contains(2012) || years.contains(2015) {
+        print("2012 and 2015 also in the list")
+    }
+}
 
-// CHECKPOINT 2
+enum Level {
+    case Amateur, Immediate, Advanced
+}
 
-// create an array of string
-let locations: [String] = ["Quang Ninh", "Yen Bai", "Ha Noi", "Ho Chi Minh", "Ha Noi", "Hai Phong", "Da Lat"]
+let myLevel: Level = .Amateur
+if myLevel == .Amateur {
+    print("I am an amateur")
+} else if myLevel == .Advanced {
+    print("I am an advanced")
+} else {
+    print("I am an immediate")
+}
 
-// print the number of items
-print("Locations count \(locations.count)")
+// Switch
+switch myLevel {
+case .Advanced:
+    print("Advanced")
+case .Amateur:
+    print("Amateur")
+default:
+    print("Immediate")
+}
 
-// print the number of unique items
-let uniqueLocations = Set(locations)
-print("Unique locations count \(uniqueLocations.count)")
+let day: Int = 5
+print("My true love gave to me…")
+switch day {
+case 5:
+    print("5 golden rings")
+    fallthrough // means will also execute the next case
+case 10:
+    print("10 golden rings")
+    fallthrough
+default:
+    print("A partridge in a pear tree")
+}
+
+let examResult = 6
+switch examResult {
+case 0:
+    print("Super low")
+case 1, 2, 3, 4, 5: // group multiple cases at once
+    print("Low level")
+case 6, 7, 8:
+    print("Immediate")
+default:
+    print("Professional")
+}
+
+let isWeatherGood: Bool = true
+let isChallengeOpen: Bool = false
+switch (isWeatherGood, isChallengeOpen) { // multiple inputs
+case (true, false):
+    print("Weather is good but no challenge available")
+case (false, true):
+    print("Challenge available but weather doesn't seem to support us")
+case (true, true):
+    print("Well, lets do it")
+default:
+    print("Weather is not good and no challenge available")
+}
+
+// Ternary condition
+let age: Int = 16
+let isTeenager = age >= 13 && age <= 19
+let isAdult = age > 19
+let isChild = age < 13
+print(isAdult ? "Adult" : "Not adult")
+print(isAdult ? "Adult" : (isTeenager ? "Teenager" : "Child"))
