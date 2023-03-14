@@ -7,148 +7,171 @@
 
 import Cocoa
 
-// combine more compare condition to if-else
-let grantedPermission = true
-let authorized = true
-if grantedPermission, authorized {
-    print("You have authorized and have the right permission_1")
-}
-if grantedPermission && authorized {
-    print("You have authorized and have the right permission_2")
+func greeting(name: String, age: Int) -> Void {
+    print("Hello \(name). You're \(age) years old")
 }
 
-// for loop
-let platforms = ["iOS", "macOS", "tvOS", "ipadOS", "watchOS"]
-for os in platforms {
-    print("Swift work great on \(os)")
+greeting(name: "Tuan", age: 34)
+
+func rollDice(_ time: Int, _ range: Range<Int>) -> Int {
+    var count = 0
+    var result: Int = Int.random(in: range)
+    while count <= time {
+        result = Int.random(in: range)
+        count += 1
+    }
+    return result
 }
 
-let developerEquipments = Set<String>(["phone", "computer", "smart watch", "camera"])
-for equipment in developerEquipments {
-    print(equipment.uppercased())
+let firstTime = rollDice(3, Range<Int>(1...100))
+print(firstTime)
+let secondTime = rollDice(30, Range<Int>(1...100))
+print(secondTime)
+
+func getNames() -> [String] {
+    return ["Tuan", "Nhi", "Nhien", "Phuong"]
 }
 
-let persons: [[String: String]] = [["name": "Tuan"], ["name": "Nhi"], ["name": "Nhien"], ["name": "Phuong"]]
-for person in persons {
-    for key in person.keys {
-        print("\(key): \(person[key])")
+func getUser(_ userId: String, name: String) -> [String: String] {
+    return ["name": name, "userId": userId]
+}
+print(getNames())
+print(getUser("123", name: "Tuan")["name", default: "No name"])
+
+// tuple
+var user: (String, Int) = ("Tuan", 34)
+print(user.0)
+print(user.1)
+
+var user2: (firstName: String, lastName: String, age: Int) = (firstName: "Tuan", lastName: "Nguyen", age: 34)
+print(user2.firstName)
+print(user2.lastName)
+print(user2.age)
+
+// (data type, data type): tuple
+func getUser2() -> (firstName: String, lastName: String) {
+    return (firstName: "Tuan", lastName: "Nguyen")
+}
+
+// destructure a tuple
+let (firstName, lastName) = getUser2()
+print("Tuple \(firstName) \(lastName)")
+
+func getUser3() -> (firstName2: String, lastName2: String) {
+    return ("Tuan", "Nguyen") // don't need to repeat tuple key as getUser2
+}
+
+print(getUser3().firstName2)
+print(getUser3().lastName2)
+
+// can use _ to ignore other parts of Tuple while destructure
+let (firstName2, _) = getUser3()
+print(firstName2)
+
+func hireEmployee(name: String) {}
+func hireEmployee(title: String) {}
+func hireEmployee(location: String) {}
+
+// customize parameter label
+// use underscore _ to hide external parameter name
+func isUpperCase(_ input: String) -> Bool {
+    input == input.uppercased()
+}
+
+let one = isUpperCase("one")
+
+// use for|in for external parameter name
+// name next to it is internal parameter name
+func printTimeTable(for time: Int) -> Void {
+    for i in 1...12 {
+        print("\(i) x \(time) is \(i * time)")
     }
 }
 
-// x ... y means an integer range
-for i in 1 ... 10 {
-    print(i)
+printTimeTable(for: 12)
+
+func doSomethingStupid(in times: Int) -> Void {
+    print("Do something stupid \(times)")
 }
 
-// x ..< y means an integer range start at x and less than y
-for i in 1 ..< 10 {
-    print(i)
-}
+doSomethingStupid(in: 10)
 
-for _ in 1 ... 3 {
-    print("Hello world. I don't care about loop variable so I used _ to ignore it")
-}
-
-enum Role {
-    case Guess, Authenticated, Moderator, Administrator
-}
-
-// while loop
-var countdown = 10
-while countdown > 0 {
-    print(countdown)
-    countdown -= 1
-}
-
-let id = Int.random(in: 1...100)
-let amount = Double.random(in: 1...100)
-
-var roll = 0
-while roll != 20 {
-    roll = Int.random(in: 1...100)
-    print("I rolled a \(roll)")
-}
-
-// repeat-while loop
-var roll2 = 0
-repeat {
-    roll2 = Int.random(in: 0...10)
-    print("I rolled2 a \(roll2)")
-} while roll2 != 5
-
-// Array, Set built-in forEach loop
-let languages = ["English", "Vietnamese", "Swedish", "French"]
-languages.forEach { language in
-    print(language)
-}
-
-let setLanguages = Set(languages)
-setLanguages.forEach { language in
-    print(language)
-}
-
-// break loop
-for i in 1...10_000_000 {
-    print("Loop \(i)")
-    if (i > 5) {
-        print("Break it now")
-        break // break the loop
-    }
-}
-
-let files = ["image.jpg", "image.jpeg", "image.png", "image.webp", "image.gift", "image.bmp"]
-for file in files {
-    if (file.hasSuffix("webp") == false) {
-        print("\(file) does not match")
-        continue
-    }
-    print("Found \(file) but the loop doesn't stop yet")
-}
-
-var counter = 0
-while true {
-    counter += 1
-    print("Counter \(counter)")
-    if (counter == 3) {
-        print("Break while")
-        break
-    }
-}
-
-repeat {
-    counter += 1
-    print("Repeat counter \(counter)")
-    if (counter == 5) {
-        print("Break repeat-while at \(counter)")
-        break
-    }
-} while true
-
-// CHECKPOINT 3
-
-/**
- Loop 1 to 100 and for each number:
- - If it’s a multiple of 3, print “Fizz”
- - If it’s a multiple of 5, print “Buzz”
- - If it’s a multiple of 3 and 5, print “FizzBuzz”
- - Otherwise, just print the number
- */
-
-print("CHECKPOINT 3")
-
-for i in 1...100 {
-    if i.isMultiple(of: 3) || i.isMultiple(of: 5) {
-        if i.isMultiple(of: 3) {
-            print("Fizz")
-        }
-        if i.isMultiple(of: 5) {
-            print("Buzz")
-        }
-        if i.isMultiple(of: 3), i.isMultiple(of: 5) {
-            print("FizzBuzz")
-        }
-    } else {
+// assign default value to parameter
+func count(start: Int, end: Int = 10) {
+    for i in start...end {
         print(i)
     }
+}
 
+count(start: 0)
+count(start: 10, end: 20)
+
+// handle errors in functions
+enum PasswordError: Error {
+    case short, obvious
+}
+func checkPassword(_ password: String) throws -> String {
+    if password.count < 5 {
+        throw PasswordError.short
+    }
+    if password == "12345" {
+        throw PasswordError.obvious
+    }
+    if password.count < 8 {
+        return "Ok"
+    }
+    if password.count < 10 {
+        return "Good"
+    }
+    return "Excellent"
+}
+
+do {
+    let result = try checkPassword("12345")
+    print("Password: \(result)")
+} catch PasswordError.short { // can catch every single exception
+    print("Password is too short")
+} catch {
+    print("Error")
+}
+
+// the try! means you can use try without do-catch block but it will crash your code if have an Exception
+// you should rarely use this
+let result = try! checkPassword("12345ddasd")
+print("Password: \(result)")
+
+// CHECKPOINT 4
+// write a function that accepts an integer from 1 through 10,000, and returns the integer square root of that number
+enum ErrorSquareRoot: Error {
+    case outbound, noroot
+}
+
+func findSquareRoot(of input: Int) throws -> Int {
+    if input < 1 || input > 10_000 {
+        throw ErrorSquareRoot.outbound
+    }
+
+    var sqrt: Int?
+    for i in 1...100 {
+        if i * i == input {
+            sqrt = i
+            break
+        }
+    }
+    guard let sqrt = sqrt else {
+        throw ErrorSquareRoot.noroot
+    }
+    return sqrt
+}
+
+do {
+    let input = 10_000
+    let sqrt = try findSquareRoot(of: input)
+    print("Square root of \(input) is \(sqrt)")
+} catch ErrorSquareRoot.outbound {
+    print("Outbound exception")
+} catch ErrorSquareRoot.noroot {
+    print("No root exception")
+} catch {
+    print("Other exception")
 }
