@@ -7,103 +7,146 @@
 
 import Cocoa
 
-// CLOSURE
-let greeting: () -> Void = { // closure
-    print("Hi there")
-}
-
-greeting()
-
-let greetingTwo: (String) -> String = { (name: String) -> String in // closure with parameter
-    "Hi \(name)"
-}
-
-print(greetingTwo("Tuan"))
-
-let greetingThree = { (name: String, age: Int) -> String in // closure with parameter
-    "Hi \(name), you're \(age) years old"
-}
-print(greetingThree("Tuan", 34))
-
-let names = ["Tuan", "Nhi", "Phuong", "Nhien", "Duong"]
-
-let sortedNames = names.sorted(by:{ (name1: String, name2: String) -> Bool in // closure with 02 parameters
-    if name1 == "Nhien" {
-        return true
+// STRUCTS
+struct Album {
+    let title: String
+    let artist: String
+    let year: Int
+    
+    func printSummary() -> Void {
+        print("\(title) - \(artist) - \(year)")
     }
-    if name2 == "Nhien" {
-        return false
-    }
-    return name1 > name2
-})
-print(sortedNames) // ["Nhien", "Tuan", "Phuong", "Nhi", "Duong"]
-
-// trailing closure syntax
-// Remove the by: and parenthesis, just go into closure directly
-
-// shorthand parameter names
-// (name1: String, name2: String)
-// $0 stand for parameter name1 at index 0
-// $1 stand for parameter name2 at index 1
-// recommend doing this only under some conditions.
-
-let sortedNames2 = names.sorted {
-    if $0 == "Nhien" {
-        return true
-    }
-    if $1 == "Nhien" {
-        return false
-    }
-    return $0 > $1
 }
 
-print(sortedNames2) // ["Nhien", "Tuan", "Phuong", "Nhi", "Duong"]
+let simplePlan = Album(title: "Welcome to my life", artist: "Simple Plan", year: 2009)
+simplePlan.printSummary()
 
-// even shorter
-let uppercaseNames = names.map { $0.uppercased() }
-print(uppercaseNames) // ["TUAN", "NHI", "PHUONG", "NHIEN", "DUONG"]
-
-// ACCEPT FUNCTIONS AS PARAMETERS
-func makeArray(
-    sizes: Int,
-    using generate: () -> Int,
-    alsoPrint printOut: (String) -> Void,
-    finally logs: () -> Void
-) -> [Int] {
-    var result = [Int]()
-    for _ in 0...sizes {
-        let num = generate()
-        result.append(num)
-        printOut("Generated \(num)")
+enum Department {
+    case HR, IT, BOD
+}
+struct Employee {
+    let name: String
+    let department: Department
+    var remainingDays: Int = 12
+    
+    mutating func takeVacationDays(days: Int) {
+        if (remainingDays > days) {
+            remainingDays -= days
+            print("\(name) going on vacation")
+            print("Day's remaining \(remainingDays)")
+        } else {
+            print("Oops! There aren't enough days remaining")
+        }
     }
-    logs()
-    return result
 }
 
-// calling function and passing multiple closures
-let arr = makeArray(sizes: 10) {
-    Int.random(in: 1...200)
-} alsoPrint: {
-    print($0)
-} finally: {
-    print("Finally done")
-}
+// need to use var keyword to declare a struct variable to be able to change the child data such as remainingDays
+// if you declare struct data as a constant (let), Swift will makes the struct data constant, that's why you needed to use var keyword instead
+var tuan = Employee(name: "Tuan", department: .IT, remainingDays: 12)
+tuan.takeVacationDays(days: 10)
+print(tuan.remainingDays)
 
-print(arr)
+// variables and constant belong to structs are called properties
+// function belong to structs called method
+// When create a constant or variable out of a struct, we call that an instance
+// When create instances of structs, we do using an initializer of that struct such as Employee(name: "Tuan", department: .IT, remainingDays: 12)
 
-// CHECKPOINT 5
+// Swift silently creates a special function inside the struct called init(), using all the properties of the struct as its parameters
+// it then automatically treats these two pieces of code as being the same:
+var phuong = Employee(name: "Phuong", department: .HR, remainingDays: 12)
+var phuong2 = Employee.init(name: "Phuong", department: .HR, remainingDays: 12)
+
+// Swift siliently generate an initializer with a default value of 12 for remainingDays, so you don't need to pass value for that property
+var phuong3 = Employee(name: "Phuong", department: .HR)
+var phuong4 = Employee.init(name: "Phuong", department: .HR)
+
+
+// COMPUTED PROPERTY
 /**
- - Filter out any numbers that are even
- - Sort the array in ascending order
- - Map them to strings in the format “7 is a lucky number”
- - Print the resulting array, one item per line
+ Swift can have 02 kinds of properties:
+ - a stored property is a variable or constant that hold a piece of data inside an instance of the struct
+ - a computed property calucates the value of the property dynamically every time it's accessed. (This means computed property are a blend of both stored properties and functions. they are accessed as a stored properties but work like functions)
  */
-let luckyNumbers = [7, 4, 38, 21, 16, 15, 12, 33, 31, 49]
-print(luckyNumbers)
+enum VacationError: Error {
+    case outbound
+}
+struct User {
+    let username: String
+    let age: Int
+    var vacationTaken = 0
+    var vacationAllocated = 12
+    
+    // computed property vacationRemaining
+    var vacationRemaining: Int {
+        vacationAllocated - vacationTaken
+    }
+    
+    // computed property with custom getter/setter functions
+    var vacationRemaining2: Int {
+        get {
+            vacationAllocated - vacationTaken
+        }
+        
+        set {
+            vacationAllocated = vacationTaken + newValue // newValue provided by Swift, store whatever assigned to computed property
+        }
+    }
+}
 
-let processedLuckyNumbers = luckyNumbers
-    .filter { !$0.isMultiple(of: 2) } // Filter out any numbers that are even
-    .sorted { $0 < $1 } // Sort the array in ascending order
-    .map { "\($0) is a lucky number"} // Map them to strings in the format “7 is a lucky number”
+var nhi = User(username: "Nhi", age: 2)
+nhi.vacationTaken += 10
+nhi.vacationRemaining2 = 2 // 2 is newValue that assign to the computed property
+print("Remaining vacation of \(nhi.username): \(nhi.vacationRemaining) \(nhi.vacationRemaining2)")
 
-processedLuckyNumbers.forEach { print($0) } // Print the resulting array, one item per line
+// PROPERTY OBSERVERS
+/**
+ Swift lets us create property observers, which are special pieces of code that run when properties change.
+ These take 2 forms:
+ - a didSet observer to run when the property just changed
+ - a willSet observer to run before the property changed
+ */
+struct Game {
+    var score = 0.0 {
+        willSet {
+            print("Current score is \(score)")
+            print("New score will be \(newValue)")
+        }
+        didSet {
+            print("Score is now \(score)")
+            print("Old score is \(oldValue)")
+        }
+    }
+    
+    var histories = [Double]() {
+        willSet {
+            print("Current histories: \(histories.count), Next histories will be \(newValue.count)")
+        }
+        didSet {
+            print("Histories is now \(histories.count), previous histories is \(oldValue.count)")
+        }
+    }
+}
+var game = Game()
+game.score += 10
+game.score += 20
+game.histories.append(15.0)
+game.histories.append(9.0)
+
+// CREATE CUSTOM INITIALIZER
+
+enum Rank {
+    case Golden, Silver, Copper
+}
+struct Player {
+    let name: String
+    let rank: Rank
+    
+    // custom initializer
+    init(name: String) {
+        self.name = name
+        self.rank = .Copper // we no longer take rank parameter, just assign a fixed value to this constant
+    }
+}
+
+let player01 = Player(name: "Player 01")
+print(player01)
