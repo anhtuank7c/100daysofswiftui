@@ -7,146 +7,146 @@
 
 import Cocoa
 
-// STRUCTS
-struct Album {
-    let title: String
-    let artist: String
-    let year: Int
+// ACCESS CONTROL
+
+enum TransactionType {
+    case DEPOSIT, SPENT, WITHDRAW
+}
+
+struct Transaction {
+    let type: TransactionType
+    let amount: Double
+}
+
+enum AccountStatus {
+    case ACTIVATED, SUSPENDED, DEACTIVATED
+}
+
+// private means don't let anything outside of that struct to use this
+// private(set) mean let anyone, anywhere get this but just let inside of that struct to set
+// fileprivate means don't let anything outside of current file to use this
+// public means let anyone, anywhere use this
+struct BankAccount {
+    private var funds: Double = 0.0
+    private(set) var transactions = [Transaction]()
+    public var status: AccountStatus = .ACTIVATED
     
-    func printSummary() -> Void {
-        print("\(title) - \(artist) - \(year)")
+    mutating func deposit(amount: Double) {
+        transactions.append(Transaction(type: .DEPOSIT, amount: amount))
+        funds += amount
+        print("Deposit \(amount) successfully")
     }
-}
-
-let simplePlan = Album(title: "Welcome to my life", artist: "Simple Plan", year: 2009)
-simplePlan.printSummary()
-
-enum Department {
-    case HR, IT, BOD
-}
-struct Employee {
-    let name: String
-    let department: Department
-    var remainingDays: Int = 12
     
-    mutating func takeVacationDays(days: Int) {
-        if (remainingDays > days) {
-            remainingDays -= days
-            print("\(name) going on vacation")
-            print("Day's remaining \(remainingDays)")
-        } else {
-            print("Oops! There aren't enough days remaining")
+    mutating func pay(amount: Double) -> Bool {
+        if status != .ACTIVATED {
+            print("Account has been \(status)")
+            return false
         }
+        if funds >= amount {
+            transactions.append(Transaction(type: .SPENT, amount: amount))
+            print("Pay \(amount) successfully")
+            return true
+        }
+        print("Balance insufficient. Pay error.")
+        return false
+    }
+    
+    mutating func withdraw(amount: Double) -> Bool {
+        if status != .ACTIVATED {
+            print("Account has been \(status)")
+            return false
+        }
+        if funds >= amount {
+            transactions.append(Transaction(type: .WITHDRAW, amount: amount))
+            print("Withdraw \(amount) successfully")
+            return true
+        }
+        print("Balance insufficient. Withdraw error.")
+        return false
     }
 }
 
-// need to use var keyword to declare a struct variable to be able to change the child data such as remainingDays
-// if you declare struct data as a constant (let), Swift will makes the struct data constant, that's why you needed to use var keyword instead
-var tuan = Employee(name: "Tuan", department: .IT, remainingDays: 12)
-tuan.takeVacationDays(days: 10)
-print(tuan.remainingDays)
+var tuanAcc = BankAccount()
+tuanAcc.deposit(amount: 1000000)
+tuanAcc.pay(amount: 20000)
+print(tuanAcc.status)
+tuanAcc.status = .SUSPENDED
+tuanAcc.withdraw(amount: 9000000)
+print(tuanAcc.transactions)
+print(tuanAcc.status)
 
-// variables and constant belong to structs are called properties
-// function belong to structs called method
-// When create a constant or variable out of a struct, we call that an instance
-// When create instances of structs, we do using an initializer of that struct such as Employee(name: "Tuan", department: .IT, remainingDays: 12)
-
-// Swift silently creates a special function inside the struct called init(), using all the properties of the struct as its parameters
-// it then automatically treats these two pieces of code as being the same:
-var phuong = Employee(name: "Phuong", department: .HR, remainingDays: 12)
-var phuong2 = Employee.init(name: "Phuong", department: .HR, remainingDays: 12)
-
-// Swift siliently generate an initializer with a default value of 12 for remainingDays, so you don't need to pass value for that property
-var phuong3 = Employee(name: "Phuong", department: .HR)
-var phuong4 = Employee.init(name: "Phuong", department: .HR)
-
-
-// COMPUTED PROPERTY
+// STATIC PROPERTIES AND METHODS
 /**
- Swift can have 02 kinds of properties:
- - a stored property is a variable or constant that hold a piece of data inside an instance of the struct
- - a computed property calucates the value of the property dynamically every time it's accessed. (This means computed property are a blend of both stored properties and functions. they are accessed as a stored properties but work like functions)
+ static properties and static functions are access directly via struct name such as School.studentCount, School.add(student: "Tuan") without initialize any instance
+ CAN acess static code from non-static code but CANNOT access non-static code from static code
  */
-enum VacationError: Error {
-    case outbound
-}
-struct User {
-    let username: String
-    let age: Int
-    var vacationTaken = 0
-    var vacationAllocated = 12
-    
-    // computed property vacationRemaining
-    var vacationRemaining: Int {
-        vacationAllocated - vacationTaken
+struct School {
+    static var studentCount = 0
+    static func add(student: String) {
+        print("\(student) joined the school")
+        studentCount += 1
     }
     
-    // computed property with custom getter/setter functions
-    var vacationRemaining2: Int {
-        get {
-            vacationAllocated - vacationTaken
+    func accessStaticProperties() {
+        print("Number of student: \(School.studentCount) or \(Self.studentCount)") // can access static code from non-static code via struct name or Self
+        // Self refer to struct itself but self refer current value of struct instance
+    }
+    
+    func addStudent(student: String) {
+        Self.add(student: student) // can access static code from non-static code
+    }
+}
+
+School.add(student: "Tuan")
+School.add(student: "Nhi")
+print(School.studentCount)
+
+var std01 = School()
+std01.accessStaticProperties()
+std01.addStudent(student: "Nhien")
+std01.accessStaticProperties()
+print(School.studentCount)
+
+// static is useful in case we wan't to organize common data
+struct Environment {
+    static let endpoint: String = "https://example.com"
+    static let version: String = "1.2"
+}
+
+// CHECKPOINT 6
+/**
+ Create a struct to store information about a car, including its model, number of seats, and current gear, then add a method to change gears up or down
+ */
+enum Gear {
+    case P, N, D, S
+}
+struct Car {
+    let model: String
+    let numberOfSeats: Int
+
+    private(set) var currentGear: Gear {
+        willSet {
+            print("Current gear \(currentGear)")
+            print("New gear \(newValue)")
         }
         
-        set {
-            vacationAllocated = vacationTaken + newValue // newValue provided by Swift, store whatever assigned to computed property
-        }
-    }
-}
-
-var nhi = User(username: "Nhi", age: 2)
-nhi.vacationTaken += 10
-nhi.vacationRemaining2 = 2 // 2 is newValue that assign to the computed property
-print("Remaining vacation of \(nhi.username): \(nhi.vacationRemaining) \(nhi.vacationRemaining2)")
-
-// PROPERTY OBSERVERS
-/**
- Swift lets us create property observers, which are special pieces of code that run when properties change.
- These take 2 forms:
- - a didSet observer to run when the property just changed
- - a willSet observer to run before the property changed
- */
-struct Game {
-    var score = 0.0 {
-        willSet {
-            print("Current score is \(score)")
-            print("New score will be \(newValue)")
-        }
         didSet {
-            print("Score is now \(score)")
-            print("Old score is \(oldValue)")
+            print("You have selected \(currentGear) gear")
+            print("Previous gear is \(oldValue)")
         }
     }
-    
-    var histories = [Double]() {
-        willSet {
-            print("Current histories: \(histories.count), Next histories will be \(newValue.count)")
-        }
-        didSet {
-            print("Histories is now \(histories.count), previous histories is \(oldValue.count)")
-        }
-    }
-}
-var game = Game()
-game.score += 10
-game.score += 20
-game.histories.append(15.0)
-game.histories.append(9.0)
 
-// CREATE CUSTOM INITIALIZER
-
-enum Rank {
-    case Golden, Silver, Copper
-}
-struct Player {
-    let name: String
-    let rank: Rank
-    
-    // custom initializer
-    init(name: String) {
-        self.name = name
-        self.rank = .Copper // we no longer take rank parameter, just assign a fixed value to this constant
+    mutating func selectGear(gear: Gear) {
+        currentGear = gear
     }
 }
 
-let player01 = Player(name: "Player 01")
-print(player01)
+var hondaCRV = Car(model: "HONDA CRV", numberOfSeats: 7, currentGear: .P)
+print(hondaCRV)
+hondaCRV.selectGear(gear: .D)
+print(hondaCRV)
+
+var toyotaCross = Car(model: "Toyota Cross", numberOfSeats: 5, currentGear: .S)
+print(toyotaCross)
+toyotaCross.selectGear(gear: .N)
+print(toyotaCross)
