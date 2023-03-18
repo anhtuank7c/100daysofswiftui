@@ -7,146 +7,235 @@
 
 import Cocoa
 
-// ACCESS CONTROL
-
-enum TransactionType {
-    case DEPOSIT, SPENT, WITHDRAW
-}
-
-struct Transaction {
-    let type: TransactionType
-    let amount: Double
-}
-
-enum AccountStatus {
-    case ACTIVATED, SUSPENDED, DEACTIVATED
-}
-
-// private means don't let anything outside of that struct to use this
-// private(set) mean let anyone, anywhere get this but just let inside of that struct to set
-// fileprivate means don't let anything outside of current file to use this
-// public means let anyone, anywhere use this
-struct BankAccount {
-    private var funds: Double = 0.0
-    private(set) var transactions = [Transaction]()
-    public var status: AccountStatus = .ACTIVATED
-    
-    mutating func deposit(amount: Double) {
-        transactions.append(Transaction(type: .DEPOSIT, amount: amount))
-        funds += amount
-        print("Deposit \(amount) successfully")
-    }
-    
-    mutating func pay(amount: Double) -> Bool {
-        if status != .ACTIVATED {
-            print("Account has been \(status)")
-            return false
-        }
-        if funds >= amount {
-            transactions.append(Transaction(type: .SPENT, amount: amount))
-            print("Pay \(amount) successfully")
-            return true
-        }
-        print("Balance insufficient. Pay error.")
-        return false
-    }
-    
-    mutating func withdraw(amount: Double) -> Bool {
-        if status != .ACTIVATED {
-            print("Account has been \(status)")
-            return false
-        }
-        if funds >= amount {
-            transactions.append(Transaction(type: .WITHDRAW, amount: amount))
-            print("Withdraw \(amount) successfully")
-            return true
-        }
-        print("Balance insufficient. Withdraw error.")
-        return false
-    }
-}
-
-var tuanAcc = BankAccount()
-tuanAcc.deposit(amount: 1000000)
-tuanAcc.pay(amount: 20000)
-print(tuanAcc.status)
-tuanAcc.status = .SUSPENDED
-tuanAcc.withdraw(amount: 9000000)
-print(tuanAcc.transactions)
-print(tuanAcc.status)
-
-// STATIC PROPERTIES AND METHODS
+// Similar and different thing between Class and struct
 /**
- static properties and static functions are access directly via struct name such as School.studentCount, School.add(student: "Tuan") without initialize any instance
- CAN acess static code from non-static code but CANNOT access non-static code from static code
+ // SIMILAR
+ - You get to create and name then
+ - you can add properties and methods, including property observers and access control
+ - you can create custom initializer to configure new instance however you want
+ 
+ // DIFFERENTS
+ - You can make on class build upon functionality in another class, gaining all its properties and method as a starting point. If you want to selectively override some methods, you can do that too
+ - Swift won't automatically generate a memberwise initializer for classes, you NEED to write your own initializer or assign default value to all your properties
+ - when you copy an instance of a class. both share the same data.if you change one copy, other one also changes
+ - when a final copy of a class instance is destroyed, Swift can OPTIONALLY run a special function called deinitializer
+ - even if you make a class constant, you can still change its properties as long as they are variables
  */
-struct School {
-    static var studentCount = 0
-    static func add(student: String) {
-        print("\(student) joined the school")
-        studentCount += 1
-    }
-    
-    func accessStaticProperties() {
-        print("Number of student: \(School.studentCount) or \(Self.studentCount)") // can access static code from non-static code via struct name or Self
-        // Self refer to struct itself but self refer current value of struct instance
-    }
-    
-    func addStudent(student: String) {
-        Self.add(student: student) // can access static code from non-static code
-    }
-}
 
-School.add(student: "Tuan")
-School.add(student: "Nhi")
-print(School.studentCount)
-
-var std01 = School()
-std01.accessStaticProperties()
-std01.addStudent(student: "Nhien")
-std01.accessStaticProperties()
-print(School.studentCount)
-
-// static is useful in case we wan't to organize common data
-struct Environment {
-    static let endpoint: String = "https://example.com"
-    static let version: String = "1.2"
-}
-
-// CHECKPOINT 6
-/**
- Create a struct to store information about a car, including its model, number of seats, and current gear, then add a method to change gears up or down
- */
-enum Gear {
-    case P, N, D, S
-}
-struct Car {
-    let model: String
-    let numberOfSeats: Int
-
-    private(set) var currentGear: Gear {
-        willSet {
-            print("Current gear \(currentGear)")
-            print("New gear \(newValue)")
-        }
-        
+class Game {
+    var score = 0 {
         didSet {
-            print("You have selected \(currentGear) gear")
-            print("Previous gear is \(oldValue)")
+            print("Score is now \(score)")
         }
-    }
-
-    mutating func selectGear(gear: Gear) {
-        currentGear = gear
     }
 }
 
-var hondaCRV = Car(model: "HONDA CRV", numberOfSeats: 7, currentGear: .P)
-print(hondaCRV)
-hondaCRV.selectGear(gear: .D)
-print(hondaCRV)
+var newGame = Game()
+newGame.score = 10
 
-var toyotaCross = Car(model: "Toyota Cross", numberOfSeats: 5, currentGear: .S)
-print(toyotaCross)
-toyotaCross.selectGear(gear: .N)
-print(toyotaCross)
+// class inherit
+class Employee {
+    let hours: Int
+    init(hours: Int) {
+        self.hours = hours
+    }
+    
+    func printSummary() {
+        print("I work \(hours) hours a day")
+    }
+}
+
+class Developer: Employee {
+    override func printSummary() {
+        print("I am writing code for \(hours) hours")
+    }
+}
+class Manager: Employee {
+    override func printSummary() {
+        print("I am going to meet \(hours) hours")
+    }
+}
+
+let tuan = Developer(hours: 8)
+tuan.printSummary()
+
+let nhi = Manager(hours: 4)
+nhi.printSummary()
+
+// add initializer for classes
+
+class Animal {
+    let age: Int
+    init(age: Int) {
+        self.age = age
+    }
+
+    func speak() {
+        print("Animal goes BipBip")
+    }
+}
+
+class Cat: Animal {
+    let name: String
+
+    init(age: Int, name: String) {
+        self.name = name
+        super.init(age: age)
+    }
+
+    override func speak() {
+        print("The cat \(name) goes Meo meo")
+    }
+}
+
+class Dog: Animal {
+    override func speak() {
+        print("The dog goes Woff woff")
+    }
+}
+
+let meow = Cat(age: 2, name: "Meow")
+meow.speak()
+let dog = Dog(age: 2)
+dog.speak()
+
+// copy classes
+// In Swift, all copy of a class instance share the same data, meaning that any changes you make
+// to one copy will automatically change other copies. (Different with struct)
+
+class User {
+    var name = "Anonymous"
+    
+    // If you want to copy, you need to handle create a new instance then assign current properties values to the new instance
+    func copy() -> User {
+        let user = User()
+        user.name = name
+        return user
+    }
+}
+
+let user1 = User()
+let user2 = user1.copy()
+user2.name = "Taylor"
+print(user1.name)
+print(user2.name)
+
+// deinitializer
+
+class Car {
+    var wheel: Int
+    let numberPlate: String
+    init(wheel: Int, numberPlate: String) {
+        self.wheel = wheel
+        self.numberPlate = numberPlate
+        print("I am alive")
+    }
+
+    deinit {
+        print("I am death")
+    }
+}
+
+var cars = [Car]()
+for i in 1...3 {
+    let car = Car(wheel: i, numberPlate: "12A-123\(i)")
+    print("Car \(car.wheel): I am in control")
+    cars.append(car)
+}
+print("Loop is over")
+cars.removeAll()
+print("Array of cars is cleared")
+
+// work with variables inside classes
+
+let car = Car(wheel: 4, numberPlate: "30A-12312")
+car.wheel = 5 // constant instance and variable properties can be change
+// car.numberPlate = "22C-123123" // constant variable and constant property cannot be change
+
+var car2 = Car(wheel: 7, numberPlate: "88A-99999")
+car2.wheel = 5 // variable instance and variable properties can be change
+// car2.numberPlate = "88A-88888" // variable instance and constant properties cannot be change
+
+class A {
+    let letter: String
+    init(letter: String) {
+        self.letter = letter
+    }
+}
+
+// use final keywork to stop other subclassing from this class
+final class B:A {
+    func printMe() {
+        print("Letter \(letter)")
+    }
+}
+
+// class C: B {} class C cannot subclassing from B because class B is final
+
+// CHECKPOINT 7
+/**
+Make a class hierarchy for animals, starting with Animal at the top, then Dog and Cat as subclasses, then Corgi and Poodle as subclasses of Dog, and Persian and Lion as subclasses of Cat.
+
+But there’s more:
+- The Animal class should have a legs integer property that tracks how many legs the animal has.
+- The Dog class should have a speak() method that prints a generic dog barking string, but each of the subclasses should print something slightly different.
+- The Cat class should have a matching speak() method, again with each subclass printing something different.
+- The Cat class should have an isTame Boolean property, provided using an initializer.
+ */
+class CheckpointAnimal {
+    let legs: Int
+    init(legs: Int) {
+        self.legs = legs
+    }
+}
+
+class CheckpointDog: CheckpointAnimal {
+    func speak() {
+        print("The dog bark Woof Woof")
+    }
+}
+class CheckpointCat: CheckpointAnimal {
+    let isTame: Bool
+    
+    init(isTame: Bool, legs: Int) {
+        self.isTame = isTame
+        super.init(legs: legs)
+    }
+
+    func speak() {
+        print("The cat scream Help help")
+    }
+}
+
+final class Corgi: CheckpointDog {
+    override func speak() {
+        print("Corgi bark Oh yeah")
+    }
+}
+
+final class Poodle: CheckpointDog {
+    override func speak() {
+        print("Poodle bark oach oach")
+    }
+}
+
+final class Persian: CheckpointCat {
+    override func speak() {
+        print("Persian says meow meow")
+    }
+}
+
+final class Lion: CheckpointCat {
+    override func speak() {
+        print("Lion cat says Raw raw")
+    }
+}
+
+let corgi = Corgi(legs: 4)
+corgi.speak()
+let poodle = Poodle(legs: 4)
+poodle.speak()
+let persian = Persian(isTame: true, legs: 4)
+persian.speak()
+let lion = Lion(isTame: false, legs: 4)
+lion.speak()
